@@ -1,0 +1,69 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: lms_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 0917958087
+      POSTGRES_DB: learning_management_system
+      TZ: Asia/Ho_Chi_Minh
+    ports:
+      - "5432:5432" # Expose port để DBeaver có thể kết nối
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - lms_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Go Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lms_app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # Database Configuration
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: 0917958087
+      DB_NAME: learning_management_system
+      DB_SSLMODE: disable
+
+      # JWT Configuration
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+
+      # Email Configuration (thay đổi theo cấu hình thực tế)
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: 587
+      SMTP_USER: your-email@gmail.com
+      SMTP_PASSWORD: your-app-password
+
+      # Application Configuration
+      TZ: Asia/Ho_Chi_Minh
+    volumes:
+      - ./uploads:/home/appuser/uploads # Mount thư mục uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - lms_network
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  lms_network:
+    driver: bridge
