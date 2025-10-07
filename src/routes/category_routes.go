@@ -3,6 +3,7 @@ package routes
 import (
 	"lms/src/handler"
 	"lms/src/middleware"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,8 +22,8 @@ func (cr *CategoryRoutes) Register(r *gin.RouterGroup) {
 	categories := r.Group("/categories")
 	{
 		// Public routes
-		categories.GET("/", cr.handler.GetCategories)
-		categories.GET("/:id", cr.handler.GetCategoryById)
+		categories.GET("/", middleware.CacheMiddleware(30*time.Minute), cr.handler.GetCategories)
+		categories.GET("/:id", middleware.CacheMiddleware(30*time.Minute), cr.handler.GetCategoryById)
 	}
 
 	// Admin routes
@@ -31,9 +32,10 @@ func (cr *CategoryRoutes) Register(r *gin.RouterGroup) {
 		adminCategories.Use(middleware.AuthMiddleware())
 		adminCategories.Use(middleware.AdminMiddleware())
 		{
-			adminCategories.POST("/", cr.handler.CreateCategory)
-			adminCategories.PUT("/:id", cr.handler.UpdateCategory)
-			adminCategories.DELETE("/:id", cr.handler.DeleteCategory)
+			// Khi tạo/sửa/xóa category, xóa cache
+			adminCategories.POST("/", middleware.InvalidateCachePattern("cache:/api/v1/categories*"), cr.handler.CreateCategory)
+			adminCategories.PUT("/:id", middleware.InvalidateCachePattern("cache:/api/v1/categories*"), cr.handler.UpdateCategory)
+			adminCategories.DELETE("/:id", middleware.InvalidateCachePattern("cache:/api/v1/categories*"), cr.handler.DeleteCategory)
 		}
 	}
 }

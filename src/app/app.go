@@ -1,6 +1,7 @@
 package app
 
 import (
+	"lms/src/cache"
 	"lms/src/config"
 	"lms/src/db"
 	"lms/src/routes"
@@ -33,6 +34,12 @@ func NewApplication(cfg *config.ServerConfig) *Application {
 	err := db.InitDB()
 	if err != nil {
 		log.Fatal("unable to connect to db")
+	}
+
+	// Khởi tạo Redis
+	if err := cache.InitRedis(); err != nil {
+		log.Printf("⚠️ Warning: Redis connection failed: %v", err)
+		log.Println("📝 Application will run without cache")
 	}
 
 	// Tạo Gin router

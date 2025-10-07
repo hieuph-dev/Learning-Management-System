@@ -10,7 +10,7 @@ services:
       POSTGRES_DB: learning_management_system
       TZ: Asia/Ho_Chi_Minh
     ports:
-      - "5433:5432" # Expose port để DBeaver có thể kết nối [dbeaver:postgresql]
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -19,6 +19,24 @@ services:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
+      retries: 5
+
+  # Redis Cache - THÊM MỚI
+  redis:
+    image: redis:7-alpine
+    container_name: lms_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - lms_network
+    command: redis-server --appendonly yes --requirepass "your-redis-password"
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
       retries: 5
 
   # Go Application
@@ -31,7 +49,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - .env # Thêm dòng này
+      - .env
     environment:
       # Database Configuration
       DB_HOST: postgres
@@ -41,10 +59,16 @@ services:
       DB_NAME: learning_management_system
       DB_SSLMODE: disable
 
+      # Redis Configuration - THÊM MỚI
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: "0917958087"
+      REDIS_DB: 0
+
       # JWT Configuration
       JWT_SECRET: your-super-secret-jwt-key-change-in-production
 
-      # Email Configuration (thay đổi theo cấu hình thực tế)
+      # Email Configuration
       SMTP_HOST: smtp.gmail.com
       SMTP_PORT: 587
       SMTP_USER: your-email@gmail.com
@@ -53,15 +77,19 @@ services:
       # Application Configuration
       TZ: Asia/Ho_Chi_Minh
     volumes:
-      - ./uploads:/home/appuser/uploads # Mount thư mục uploads
+      - ./uploads:/home/appuser/uploads
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - lms_network
 
 volumes:
   postgres_data:
+    driver: local
+  redis_data:
     driver: local
   pgadmin_data:
     driver: local
