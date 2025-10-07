@@ -1,0 +1,51 @@
+# Git
+.git
+.gitignore
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build files
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test files
+*.test
+*.out
+
+# Dependencies
+vendor/
+
+# Logs
+*.log
+logs/
+
+# Uploads (nếu không muốn copy vào image)
+src/uploads/
+
+# Database data
+postgres_data/
+
+# Documentation
+*.md
+docs/
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
