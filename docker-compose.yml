@@ -6,11 +6,11 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 0917958087
+      POSTGRES_PASSWORD: "0917958087"
       POSTGRES_DB: learning_management_system
       TZ: Asia/Ho_Chi_Minh
     ports:
-      - "5432:5432" # Expose port để DBeaver có thể kết nối
+      - "5433:5432" # Expose port để DBeaver có thể kết nối [dbeaver:postgresql]
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -30,12 +30,14 @@ services:
     restart: unless-stopped
     ports:
       - "8080:8080"
+    env_file:
+      - .env # Thêm dòng này
     environment:
       # Database Configuration
       DB_HOST: postgres
-      DB_PORT: 5432
+      DB_PORT: "5432"
       DB_USER: postgres
-      DB_PASSWORD: 0917958087
+      DB_PASSWORD: "0917958087"
       DB_NAME: learning_management_system
       DB_SSLMODE: disable
 
