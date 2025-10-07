@@ -36,7 +36,7 @@ func NewDBConfig() *DBConfig {
 			Port:     utils.GetEnv("DB_PORT", "5432"),
 			User:     utils.GetEnv("DB_USER", "postgres"),
 			Password: utils.GetEnv("DB_PASSWORD", "postgres"),
-			DBName:   utils.GetEnv("DB_NAME", "elearning_management_system"),
+			DBName:   utils.GetEnv("DB_NAME", "learning_management_system"),
 			SSLMode:  utils.GetEnv("DB_SSLMODE", "disable"),
 		},
 	}

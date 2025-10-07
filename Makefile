@@ -53,7 +53,7 @@ shell-app:
 
 # Access postgres container shell
 shell-db:
-	docker-compose exec postgres psql -U postgres -d lms_db
+	docker-compose exec postgres psql -U postgres -d learning_management_system
 
 # Rebuild and restart
 rebuild:
