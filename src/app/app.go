@@ -58,6 +58,7 @@ func NewApplication(cfg *config.ServerConfig) *Application {
 		NewProgressModule(),
 		NewOrderModule(),
 		NewCouponModule(),
+		NewPaymentModule(),
 	}
 
 	// Đăng ký routes cho tất cả modules

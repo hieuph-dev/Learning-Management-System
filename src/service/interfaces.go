@@ -121,3 +121,10 @@ type AdminAnalyticsService interface {
 	GetAdminUsersAnalytics(req *dto.AdminUsersAnalyticsRequest) (*dto.AdminUsersAnalyticsResponse, error)
 	GetAdminCoursesAnalytics(req *dto.AdminCoursesAnalyticsRequest) (*dto.AdminCoursesAnalyticsResponse, error)
 }
+
+type PaymentService interface {
+	CreatePayment(userId uint, req *dto.CreatePaymentRequest) (*dto.CreatePaymentResponse, error)
+	HandleMomoCallback(data map[string]interface{}) (*dto.PaymentCallbackResponse, error)
+	HandleZaloPayCallback(data map[string]interface{}) (*dto.PaymentCallbackResponse, error)
+	CheckPaymentStatus(userId uint, req *dto.CheckPaymentStatusRequest) (*dto.CheckPaymentStatusResponse, error)
+}
